@@ -9,36 +9,54 @@
 # What are the names of the columns?
 # Use `??flights` to search for documentation on the data set (for what the 
 # columns represent)
-
+nrows(flights)
+ncol(flights)
+colnames(flights)
+?flights
 
 # Use `dplyr` to give the data frame a new column that is the amount of time
 # gained or lost while flying (that is: how much of the delay arriving occured
 # during flight, as opposed to before departing).
-
+flights <- flights %>% 
+  mutate (time_diff = arr_delay - dep_delay)
 
 # Use `dplyr` to sort your data frame in descending order by the column you just
 # created. Remember to save this as a variable (or in the same one!)
-
+flights <- flights %>% 
+  arrange(desc(time_diff))
 
 # For practice, repeat the last 2 steps in a single statement using the pipe
 # operator. You can clear your environmental variables to "reset" the data frame
-
+flights <- flights %>% 
+  mutate (time_diff = arr_delay - dep_delay) %>% 
+  arrange(desc(time_diff))
 
 # Make a histogram of the amount of time gained using the `hist()` function
-
+hist(flights$time_diff)
 
 # On average, did flights gain or lose time?
 # Note: use the `na.rm = TRUE` argument to remove NA values from your aggregation
+mean(flights$time_diff, na.rm = TRUE)
 
+# Gained
 
 # Create a data.frame of flights headed to SeaTac ('SEA'), only including the
 # origin, destination, and the "gain_in_air" column you just created
-
+to_sea <- flights %>% 
+  select(origin, dest, time_diff) %>% 
+  filter(dest == "SEA")
 
 # On average, did flights to SeaTac gain or loose time?
+mean(to_sea$time_diff, na.rm = TRUE)
 
+# Gained
 
 # Consider flights from JFK to SEA. What was the average, min, and max air time
 # of those flights? Bonus: use pipes to answer this question in one statement
 # (without showing any other data)!
-
+filter(flights, origin == "JFK", dest == "SEA") %>%
+  summarize(
+    avg_air_time = mean(air_time, na.rm = TRUE),
+    max_air_time = max(air_time, na.rm = TRUE),
+    min_air_time = min(air_time, na.rm = TRUE)
+  )
